@@ -26,8 +26,15 @@ def time_converter(time):
     return f"{hour}:{minute}:00"
 
 
+def get_semester(filename):
+    filename = filename.split(".")[0]
+    name, year = filename[:-4], filename[-4:]
+    return (name.title(), int(year))
+
+
 df = pd.DataFrame(
     columns=[
+        "semester_id",
         "course_id",
         "section",
         "days_met",
@@ -64,6 +71,14 @@ instructors = {}
 for instructor in instructors_res:
     instructors[instructor["instructor_name"]] = instructor["id"]
 
+semester_res, _ = (
+    supabase.table("semesters").select("id", "semester_name", "semester_year").execute()
+)
+semester_res = semester_res[1]
+semesters = {}
+for semester in semester_res:
+    semesters[(semester["semester_name"], semester["semester_year"])] = semester["id"]
+
 for filename in os.listdir("exam_data_csv"):
     temp = pd.read_csv(f"exam_data_csv/{filename}")
     for index, row in temp.iterrows():
@@ -73,9 +88,11 @@ for filename in os.listdir("exam_data_csv"):
             building_id = buildings[row["Building"]]
         else:
             building_id = buildings[row["BuildingName"]]
+        semester_id = semesters[get_semester(filename)]
         new_row = pd.DataFrame(
             [
                 {
+                    "semester_id": semester_id,
                     "course_id": course_id,
                     "section": (
                         row["Section"] if "Section" in temp.columns else row["Section#"]

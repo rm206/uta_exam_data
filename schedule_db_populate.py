@@ -12,6 +12,7 @@ supabase = create_client(url, key)
 with open("schedule.csv", "r") as f:
     for line in f:
         (
+            semester_id,
             course_id,
             section,
             days_met,
@@ -26,6 +27,7 @@ with open("schedule.csv", "r") as f:
             continue
         supabase.table("schedule").insert(
             {
+                "semester_id": semester_id,
                 "course_id": course_id,
                 "section": section,
                 "days_met": days_met,
