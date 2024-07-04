@@ -7,3 +7,5 @@ Order to run scripts:
 4. `populate_db.py`
 5. `schedule_list_builder.py`
 6. `schedule_db_populate.py`
+
+Associated with https://github.com/rm206/MavExamScheduler
